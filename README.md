@@ -33,3 +33,14 @@ endfunction
 
 map <leader>htxx :call Stockprice('sh600271')<cr>
 ```
+
+
+
+### 悬浮窗口
+
+类似360的悬浮窗口，每间隔3秒刷新一次
+
+使用pyqt5编写。代码详见 stock_qt.py 这个文件
+
+![](img/3.png)
+
