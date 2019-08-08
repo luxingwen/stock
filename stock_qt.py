@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QCursor, QIcon
+from PyQt5.QtGui import QCursor, QIcon, QColor, QPalette
 import ctypes
 import requests
 import datetime
@@ -36,25 +36,22 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.stockList = getStockList()
-        self.resize(200, 30)
+        l = len(self.stockList.split(","))
+        height = l * 5
         self.setWindowFlags(Qt.FramelessWindowHint|Qt.WindowStaysOnTopHint)
-        # self.setWindowOpacity(0.2)
-        self.setWindowIcon(QIcon('doraemon.ico'))
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.resize(180, height)
         self.move(1650, 100)
         self.initUI()
     
     def initUI(self):
-        self.list = QListWidget()
-        self.list.setStyleSheet("background-color:transparent")
-        self.list.setFrameShape(QListWidget.NoFrame)
+        self.label = QLabel()
         self.layout = QVBoxLayout()
-        self.layout.addWidget(self.list)
+        self.layout.addWidget(self.label)
         self.setLayout(self.layout)
         self.first = True
        
         self.stockData()
-        self.index = 1
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.stockData)
         self.timer.start(3000)
@@ -63,16 +60,16 @@ class MyApp(QWidget):
     def stockData(self):
         if not self.checkInTime() and not self.first:
             return
-        self.list.clear()
+        str = ""
         for item in getStock(self.stockList):
             name = item["name"]
             price = item["price"]
             zdfv = item["zdfv"]
             zdf = item["zdf"]
-            str_n = '{0} {1} {2}({3}%)'.format(name, price, zdfv, zdf)
-            self.list.addItem(str_n)
+            str_n = '{0} {1} {2}({3}%)\n'.format(name, price, zdfv, zdf)
+            str += str_n
+        self.label.setText(str)
         self.first = False
-        QApplication.processEvents()
     
     def checkInTime(self):
         amTimeStart = datetime.datetime.strptime(str(datetime.datetime.now().date())+'9:15', '%Y-%m-%d%H:%M')
